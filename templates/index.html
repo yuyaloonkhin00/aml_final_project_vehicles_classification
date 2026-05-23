@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Classification System</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 550px;
+            margin: 40px 20px;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            color: #1a202c;
+            font-size: 28px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        h2 {
+            margin: 0 0 10px 0;
+            color: #2d3748;
+            font-size: 22px;
+        }
+
+        .app-description {
+            color: #4a5568;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            padding: 0 10px;
+            text-align: left;
+        }
+
+        .app-description p {
+            margin-bottom: 14px;
+        }
+
+        form {
+            margin-top: 20px;
+            padding: 25px;
+            border: 2px dashed #e2e8f0;
+            border-radius: 12px;
+            background: #fafafa;
+        }
+
+        .custom-file-upload {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 8px 16px;
+            cursor: pointer;
+            background: white;
+            margin-bottom: 25px;
+            transition: background 0.2s;
+        }
+
+        .custom-file-upload:hover {
+            background: #f8fafc;
+        }
+
+        .custom-file-upload input[type="file"] {
+            display: none;
+        }
+
+        .file-btn-mock {
+            background: #e2e8f0;
+            color: #4a5568;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-right: 12px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .file-text-status {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background: #007bff;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.2s ease, transform 0.1s ease;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            background: #ebf8ff;
+            border: 1px solid #bee3f8;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .badge-confidence {
+            display: inline-block;
+            background: #3182ce;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        
+        .preview-img {
+            max-width: 100%;
+            height: auto;
+            max-height: 250px;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Vehicle Identifier</h1>
+        <div class="app-description">
+            <p>Welcome! This tool uses smart image recognition to instantly detect and classify different types of transportation from your photos.</p>
+            
+            <p>Please note that this app only supports these transportation types such as <strong>bikes, cars, motorcycles, auto rickshaws, planes, ships, and trains</strong>.</p>
+            
+            <p><strong>How to use it:</strong> Simply upload a clear picture of one of these supported vehicles from your device and click the button below. Our system will analyze the photo and show you its best guess, along with a confidence score showing how sure it is about the result.</p>
+        </div>
+
+        <form action="/predict" method="POST" enctype="multipart/form-data">
+            
+            <label class="custom-file-upload">
+                <span class="file-btn-mock">Choose File</span>
+                <span class="file-text-status" id="fileStatus">
+                    {% if prediction %}
+                        Uploaded
+                    {% else %}
+                        No file chosen
+                    {% endif %}
+                </span>
+                <input type="file" name="file" required onchange="handleFileChange(this)">
+            </label>
+            
+            <button type="submit">Predict Vehicle Type</button>
+        </form>
+
+        {% if prediction %}
+        <div class="result">
+            <h2>Prediction: {{ prediction }}</h2>
+            <div class="badge-confidence">Confidence: {{ confidence }}%</div>
+            <div>
+                <img class="preview-img" src="{{ image_path }}" alt="Uploaded Image Preview">
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <script>
+        function handleFileChange(inputElement) {
+            const statusText = document.getElementById('fileStatus');
+            
+            if (inputElement.files && inputElement.files.length > 0) {
+                statusText.textContent = inputElement.files[0].name;
+            } else {
+                statusText.textContent = "No file chosen";
+            }
+        }
+    </script>
+
+</body>
+
+</html>
