@@ -6,11 +6,17 @@ import os
 
 app = Flask(__name__)
 
+class PatchedDense(tf.keras.layers.Dense):
+    @classmethod
+    def from_config(cls, config):
+        config.pop('quantization_config', None)
+        return super().from_config(config)
+
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-model = tf.keras.models.load_model('vehicle_classifier.h5')
+model = tf.keras.models.load_model('vehicle_classifier.h5', custom_objects={'Dense': PatchedDense})
 
 class_names = [
     'Auto Rickshaws',
